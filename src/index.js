@@ -1,17 +1,33 @@
+import './public-path';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
+import ReactDOM from 'react-dom';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// 挂载的逻辑
+function render(props) {
+  const { container } = props;
+  // 如果容器(container)中存在根节点，直接挂载，否则直接挂载到根id #root
+  ReactDOM.render(<App />, container ? container.querySelector('#root') : document.querySelector('#root'));
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// 如果不是qiankun框架，由原本框架进行渲染
+if (!window.__POWERED_BY_QIANKUN__) {
+  render({});
+}
+
+export async function bootstrap() {
+  console.log('[react16] react app bootstraped');
+}
+
+export async function mount(props) {
+  console.log('[react16] props from main framework', props);
+  render(props);
+}
+
+export async function unmount(props) {
+  const { container } = props;
+  ReactDOM.unmountComponentAtNode(container ? container.querySelector('#root') : document.querySelector('#root'));
+}
+
+<BrowserRouter basename={window.__POWERED_BY_QIANKUN__ ? '/micro-app1' : '/'}></BrowserRouter>
